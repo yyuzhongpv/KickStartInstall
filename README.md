@@ -162,22 +162,18 @@ wget http://buildlogs.centos.org/rolling/7/isos/x86_64/CentOS-7-x86_64-DVD.iso
 
 11. /var/www/html/ks.cfg
 
-	# not h1 Use CDROM installation media
-	# not h1 cdrom
 	url --url http://172.30.50.2/centos7
 	repo --name=optional --baseurl=http://172.30.50.2/centos7
-	# not h1 Use graphical install
-	# not h1 graphical
+
 	text
-	# not h1 Run the Setup Agent on first boot
+
 	firstboot --enable
 	ignoredisk --only-use=sdb
-	# not h1 Keyboard layouts
+
 	keyboard --vckeymap=us --xlayouts='us'
-	# not h1 System language
+
 	lang en_US.UTF-8
 
-	# not h1 Network information
 	network  --bootproto=dhcp --device=enp0s26u1u5u5 --onboot=on --activate
 	network  --bootproto=dhcp --device=eno1 --onboot=on --activate
 	network  --bootproto=dhcp --device=enp6s0f1 --onboot=on --activate
@@ -185,16 +181,14 @@ wget http://buildlogs.centos.org/rolling/7/isos/x86_64/CentOS-7-x86_64-DVD.iso
 	network  --bootproto=dhcp --device=eno4 --onboot=off --ipv6=auto
 	network  --hostname=compute000
 
-	# not h1 Root password
-	# not h1 rootpw --iscrypted $6$SNXTMVfSy2K6mkUw$BGDingRGfuYsfPxq/RNzKnkuUtFFhB5cq1yVOTUTw7t0yvzz/tfw.keWzTaxmMxOjuKCW08AYhDVmxnDI8WNf0
 	rootpw "123456"
-	# not h1 System timezone
+
 	timezone America/chicago --isUtc
-	# not h1 System bootloader configuration
+
 	bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=sdb
-	# not h1 Partition clearing information
+
 	clearpart --all --initlabel --drives=sdb
-	# not h1 Disk partitioning information
+
 	part /var --fstype="ext4" --ondisk=sdb --size=28610
 	part / --fstype="ext4" --ondisk=sdb --size=195367
 	part swap --fstype="swap" --ondisk=sdb --size=38146
