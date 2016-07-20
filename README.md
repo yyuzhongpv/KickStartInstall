@@ -206,3 +206,13 @@ wget http://buildlogs.centos.org/rolling/7/isos/x86_64/CentOS-7-x86_64-DVD.iso
 	are you sure of the directory tftpd is useing as it's data dir?
 	does the file you are attempting to "get" actually exist?
 
+13. Boot from PXE0, and install system.
+    Change boot order, make HD0 to be the first one and reboot
+
+14. Configure all compute nodes
+    In Master node: dhcpd.conf   binding MAC with IP address
+    change hostname
+    mount home from NFS
+    reboot
+
+

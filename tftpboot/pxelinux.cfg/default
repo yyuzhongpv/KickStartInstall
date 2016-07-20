@@ -61,6 +61,7 @@ menu separator # insert an empty line
 
 label linux
   menu label ^Install CentOS 7
+  menu default
   kernel vmlinuz
   append initrd=initrd.img ip=dhcp inst.ks=http://172.30.50.2/ks.cfg inst.repo=http://172.30.50.2/centos7 quiet
 
@@ -68,7 +69,6 @@ label linux
 
 label check
   menu label Test this ^media & install CentOS 7
-  menu default
   kernel vmlinuz
   append initrd=initrd.img inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 rd.live.check quiet
 
