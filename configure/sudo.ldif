@@ -1,0 +1,22 @@
+bjectClass: top
+objectClass: organizationalUnit
+ou: Sudoers
+
+dn: cn=defaults,dc=master,dc=com
+objectClass: top
+objectClass: sudoRole
+cn: defaults
+sudoOption: !visiblepw
+sudoOption: always_set_home
+sudoOption: env_reset
+sudoOption: requiretty
+
+dn: cn=test,dc=master,dc=com
+objectClass: top
+objectClass: sudoRole
+cn: test
+sudoCommand: ALL
+sudoHost: ALL
+sudoOption: !authenticate
+sudoRunAsUser: ALL
+sudoUser: test 
