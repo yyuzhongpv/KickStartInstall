@@ -211,8 +211,15 @@ wget http://buildlogs.centos.org/rolling/7/isos/x86_64/CentOS-7-x86_64-DVD.iso
 
 14. Configure all compute nodes
     In Master node: dhcpd.conf   binding MAC with IP address
-    change hostname
-    mount home from NFS
+    change hostname /etc/sysconfig/network /etc/hosts
+    mount home from NFS  /etc/fstab
     reboot
 
+15	NFS
+ 	yum -y install nfs-utils
+
+ 	vi /etc/exports
+	/home 10.0.0.0/24(rw,no_root_squash)
+	systemctl start rpcbind nfs-server 
+	systemctl enable rpcbind nfs-server 
 

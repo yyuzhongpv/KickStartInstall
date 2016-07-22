@@ -1,0 +1,57 @@
+
+echo "********  generate ssh key on $myip  ********"
+
+if [ "$myip" = "$master" ]; then
+	echo "Master"
+else
+	ssh-keygen -t rsa;
+fi;
+
+#cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+chmod -R 700 ~/.ssh
+
+echo -e "NETWORKING=yes\nNETWORKING_IPV6=no\nHOSTNAME=${myname}" > /etc/sysconfig/network
+
+localdir0="127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4"
+localdir1="::1       localhost localhost.localdomain localhost6 localhost6.localdomain6"
+
+echo $localdir0 > /etc/hosts
+echo $localdir1 >> /etc/hosts
+
+echo "********  set hosts on $myip  ********"
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    nodeip=${allnodes[$i]}
+    echo $nodeip
+    #if [ $myip != $nodeip ]; then
+	#cat /home/hadoop/.ssh/id_rsa.pub | ssh hadoop@$nodeip 'sh -c "cat - >>~/.ssh/authorized_keys"'
+    #fi
+    nodename=${allnames[$i]}
+    echo "$nodeip $nodename$domain $nodename"  >> /etc/hosts 
+
+    let i++
+done
+
+
+#/etc/init.d/network restart
+
+
+echo "********  start to install java package  ********"
+
+cd $installpath
+rm -rf $javadir
+tar -xf $javapkg$pkgext
+ln -sf /opt/cscloud/$javadir /opt/cscloud/jdk-latest
+
+cat ./env_java.conf >> /etc/profile
+source /etc/profile
+
+
+#cp ./config_selinux /etc/selinux/config
+#chkconfig iptables off
+#/etc/init.d/iptables stop
+#service iptables stop

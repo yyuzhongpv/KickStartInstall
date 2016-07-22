@@ -1,0 +1,55 @@
+#!/bin/bash
+. ./nodes.conf
+
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    myip=${allnodes[$i]}
+    echo "********  set ssh at $myip  ********"
+    cat /root/.ssh/id_rsa.pub | ssh root@$myip 'rm -rf ~/.ssh;mkdir -p ~/.ssh;sh -c "cat - > ~/.ssh/authorized_keys;chmod -R 700 ~/.ssh"'
+    let i++
+done
+
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    cat ./nodes.conf > ./install_script
+    myip=${allnodes[$i]}
+    echo $myip
+    echo "myip=$myip" >> ./install_script
+    echo "myname=${allnames[$i]}" >> ./install_script
+    cat ./setup_node >> ./install_script
+    chmod +x ./install_script
+    ssh -n root@$myip 'sh -c "rm -rf /opt/cscloud;mkdir -p /opt/cscloud"'
+    scp ./env_java.conf ./$javapkg$pkgext ./install_script root@$myip:/opt/cscloud/
+    echo "********  Run install script on $myip  ********"
+    ssh root@$myip 'sh -c "/opt/cscloud/install_script"'
+    scp root@$myip:/root/.ssh/id_rsa.pub ./${allnames[$i]}.pub
+    let i++
+done
+
+rm ./install_script
+
+i=1
+len=${#allnodes[@]}
+while [ $i -lt $len ]
+do
+    sshfile=${allnames[$i]}.pub
+    j=0
+    while [ $j -lt $len ]
+    do
+        myip=${allnodes[$j]}
+        echo "********  add public key of ${allnodes[$i]} to $myip  ********"
+        cat $sshfile | ssh root@$myip 'sh -c "cat - >>~/.ssh/authorized_keys;"'
+        let j++
+    done
+    let i++
+    rm $sshfile
+done
+
+rm master.pub
+
