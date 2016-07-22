@@ -211,15 +211,29 @@ wget http://buildlogs.centos.org/rolling/7/isos/x86_64/CentOS-7-x86_64-DVD.iso
 
 14. Configure all compute nodes
     In Master node: dhcpd.conf   binding MAC with IP address
-    change hostname /etc/sysconfig/network /etc/hosts
-    mount home from NFS  /etc/fstab
-    reboot
+	subnet 172.30.50.0 netmask 255.255.255.0 {
+	  range 172.30.50.4 172.30.50.254;
+	  option routers 172.30.50.2;
+	  next-server 172.30.50.2;
+	  filename "pxelinux.0";
+	}
 
-15	NFS
+	host compute000 {
+	hardware ethernet 40:f2:e9:04:4a:da;
+	fixed-address 172.30.50.4;
+	}
+    change hostname /etc/sysconfig/network /etc/hosts, do it with scripts in packages
+    mount home from NFS  /etc/fstab
+	172.30.50.2:/home       /home   nfs defaults    0       0
+    reboot
+	
+    rpm -ivv pdsh*rpm
+
+15. NFS on master
  	yum -y install nfs-utils
 
  	vi /etc/exports
-	/home 10.0.0.0/24(rw,no_root_squash)
+	/home 172.30.50.0/24(rw,no_root_squash)
 	systemctl start rpcbind nfs-server 
 	systemctl enable rpcbind nfs-server 
 

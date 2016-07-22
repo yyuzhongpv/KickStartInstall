@@ -1,0 +1,16 @@
+dn: uid=yzyan,ou=People,dc=master,dc=com
+uid: yzyan
+cn: yzyan
+objectClass: account
+objectClass: posixAccount
+objectClass: top
+objectClass: shadowAccount
+userPassword: {crypt}x
+shadowLastChange: 0
+shadowMin: 0
+shadowMax: 99999
+shadowWarning: 7
+loginShell: /bin/bash
+uidNumber: 1002
+gidNumber: 1002
+homeDirectory: /home/yzyan

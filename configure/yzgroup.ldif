@@ -1,0 +1,4 @@
+dn: cn=yzyan,ou=Group,dc=master,dc=com
+objectClass: posixGroup
+objectClass: top
+gidNumber: 1002
