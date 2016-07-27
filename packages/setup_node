@@ -19,6 +19,9 @@ localdir1="::1       localhost localhost.localdomain localhost6 localhost6.local
 echo $localdir0 > /etc/hosts
 echo $localdir1 >> /etc/hosts
 
+#to set hostname for CentOS 7
+hostnamectl set-hostname $myname
+
 echo "********  set hosts on $myip  ********"
 i=0
 len=${#allnodes[@]}
