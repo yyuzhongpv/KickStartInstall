@@ -218,6 +218,8 @@ ldapdelete -W -D "cn=admin,dc=master,dc=com" "uid=yzyan,ou=People,dc=master,dc=c
     umount
     mount -a
 
+    root cause: http://www.softpanorama.org/Net/Application_layer/NFS/Troubleshooting/nfsv4_mounts_files_as_nobody.shtml
+
 5. reference
 	http://www.zhukun.net/archives/7548
 	https://wiki.gentoo.org/wiki/Centralized_authentication_using_OpenLDAP/zh
