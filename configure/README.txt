@@ -84,9 +84,7 @@ ldapadd -x -D "cn=admin,dc=master,dc=com" -W -f sudo.ldif
 	uri ldap://172.30.50.2
 	sudoers_base dc=master,dc=com
 
-
 2. Slave nodes
-
 
 vim /etc/resolv.conf
 	nameserver  8.8.8.8
@@ -105,8 +103,45 @@ authconfig --enableldap --enableldapauth --enablemkhomedir --enableforcelegacy -
 ssh ldapuser1@172.30.50.4 on 172.30.50.2 OK!!!
 
 getent passwd |grep ldapuser1  //Debug
-ldapsearch -x -H ldap://127.0.0.1 -b 'dc=master,dc=com'
+ldapsearch -x -H ldap://172.30.50.2 -b 'dc=master,dc=com'
 
+Change on Storage01 node to sharing all user info with openldap.
+$ vim /etc/openldap/ldap.conf
+add 
+BASE:dc=master,dc=com
+URL:172.30.50.2   
+ 
+$ vim /etc/nslcd.conf
+uri ldap://172.30.50.2
+base dc=master,dc=com
+ 
+$ vim /etc/nsswitch.conf
+passwd:     files ldap
+shadow:     files ldap
+group:      files ldap
+ 
+$ vim /etc/sysconfig/authconfig
+USESYSNETAUTH=yes  
+USESHADOW=yes
+USELOCAUTHORIZE=yes
+USELDAP=yes
+USELDAPAUTH=yes
+USEMD5=yes        
+USEMKHOMEDIR=yes
+PASSWDALGORITHM=sha512   
+
+$ cp /etc/pam.d/system-auth /etc/pam.d/system-auth.bak
+$ vim /etc/pam.d/system-auth
+auth        sufficient    pam_ldap.so
+
+account     [default=bad success=ok user_unknown=ignore] pam_ldap.so
+ 
+password    sufficient    pam_ldap.so use_authtok
+ 
+session     optional      pam_ldap.so
+session     optional      pam_mkhomedir.so skel=/etc/skel/ umask=0022
+
+$ service nslcd start && chkconfig --level 2345 nslcd on
 
 3. New User, create in linux as normal, then
 
@@ -143,8 +178,47 @@ ldappasswd -s yzyan -W -D "cn=admin,dc=master,dc=com" -x "uid=yzyan,ou=People,dc
 ldapdelete -W -D "cn=admin,dc=master,dc=com" "uid=yzyan,ou=People,dc=master,dc=com"
 
 
+4. Solve the problem of mounted dir with nobody:nobody.
 
-4. reference
+   vim /etc/idmapd.conf on both client and server sides. 
+
+   Domain = pvamucscloud.edu
+
+   # server information (REQUIRED)
+    LDAP_server = 172.30.50.2
+
+    # the default search base (REQUIRED)
+    LDAP_base = cn=admin,dc=master,dc=com
+ 
+    Server:
+    service nfs restart
+    service rpcidmapd restart
+
+    vim /etc/exports
+    /apps *(rw,no_root_squash)
+    /data *(rw,no_root_squash)
+    /home1 *(rw,no_root_squash)
+    /scratch *(rw,no_root_squash)
+
+    vim /etc/hosts
+    172.30.50.92 storage01.pvamucscloud.edu storage01
+
+    Client:
+
+    vim /etc/fstab
+    172.30.50.92:/home1 /home1   nfs rw    0       0
+    172.30.50.92:/data  /data   nfs rw    0       0
+    172.30.50.92:/apps  /apps  nfs rw    0       0
+    172.30.50.92:/scratch   /scratch   nfs rw    0       0
+
+    vim /etc/hosts
+    172.30.50.92 storage01.pvamucscloud.edu storage01
+
+    service rpcidmapd restart
+    umount
+    mount -a
+
+5. reference
 	http://www.zhukun.net/archives/7548
 	https://wiki.gentoo.org/wiki/Centralized_authentication_using_OpenLDAP/zh
 	http://www.centoscn.com/CentosServer/test/2015/0320/4927.html
