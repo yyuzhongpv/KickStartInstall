@@ -5,12 +5,13 @@ yum install -y openldap openldap-servers openldap-clients
 vim /etc/openldap/slapd.conf  
 	//copy from https://wiki.gentoo.org/wiki/Centralized_authentication_using_OpenLDAP/zh
 	//change several lines!!!
+	//https://linuxadministrations.wordpress.com/category/linux/ldap/troubleshooting-ldap/
 
 vim /etc/rsyslog.conf   
 	local4.* /var/log/ldap.log
 
 chown -R ldap:ldap /etc/openldap/slapd.d/
-chown -R ldap:ldap /etc/openldap/openldap-data
+chown -R ldap:ldap /etc/openldap/openldap-data  //change to /var/lib/ldap
 
 systemctl restart rsyslog.service
 systemctl start slapd.service
